@@ -24,9 +24,9 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: maindb
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_PASSWORD: 123456
-      MYSQL_USER: dbuser
+      MYSQL_ROOT_PASSWORD: guest
+      MYSQL_PASSWORD: guest
+      MYSQL_USER: guest
       SERVICE_TAGS: dev
       SERVICE_NAME: mariadb
     volumes:
