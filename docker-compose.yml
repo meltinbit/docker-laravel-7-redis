@@ -1,0 +1,81 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: laraveluser
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: laravel
+    container_name: laravel-app
+    restart: unless-stopped
+    environment: 
+      REDIS_HOST: redis
+    working_dir: /var/www/
+    volumes:
+      - ../:/var/www
+    networks:
+      - laravel-network
+
+  db:
+    image: mariadb:10.5
+    container_name: laravel-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: maindb
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_PASSWORD: 123456
+      MYSQL_USER: dbuser
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mariadb
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+      - laravel_db_data:/var/lib/mysql
+    networks:
+      - laravel-network
+  
+  queue:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - laravel_redis_data:/data
+    networks:
+     - laravel-network
+    
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel-phpmyadmin
+    ports:
+        - 10001:80
+    environment:
+        MYSQL_USER: guest
+        MYSQL_PASSWORD: guest
+        MYSQL_ROOT_PASSWORD: guest
+        UPLOAD_LIMIT: 3G
+    networks:
+        - laravel-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    restart: unless-stopped
+    ports:
+      - 10000:80
+    volumes:
+      - ../:/var/www
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - laravel-network
+
+volumes:
+  laravel_db_data:
+  laravel_redis_data:
+    
+networks:
+  laravel-network:
+    driver: bridge
