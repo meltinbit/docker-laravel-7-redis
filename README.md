@@ -9,7 +9,7 @@ composer install
 php artisan key:generate
 cp .env.example .env #set the DB credentials
 
-git clone https://github.com/meltinbit/docker-laravel-7.git docker-compose
+git clone https://github.com/meltinbit/docker-laravel-7-redis.git docker-compose
 cd docker-compose/scripts
 ./dcup.sh #to start containers
 ./dcdown.sh #to stop containers
